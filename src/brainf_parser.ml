@@ -27,7 +27,6 @@ let string_list_to_char_list (string_list: string list) : char list =
   |> List.map explode_string
   |> List.flatten
 
-
 let program_chars_to_tokens (chars: char list) : instruction array = [||]
 
 let parse_program_string (program_string: string) : instruction array =
