@@ -8,6 +8,7 @@
 *.cmxs
 *.cmxa
 *.out
+bfi
 
 # ocamlbuild working directory
 _build/
