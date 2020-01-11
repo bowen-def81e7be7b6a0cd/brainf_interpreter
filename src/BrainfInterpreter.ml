@@ -1,3 +1,4 @@
+
 type instruction = IncDataPtr
                  | DecDataPtr
                  | IncData
