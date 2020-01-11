@@ -5,11 +5,8 @@ OCCMD = $(OC) $(OCFLAGS)
 BrainfInterpreter.cmi:
 	$(OCCMD) -c BrainfInterpreter.mli
 
-BrainfInterpreter.cmo: BrainfInterpreter.cmi
-	$(OCCMD) -c BrainfInterpreter.ml
-
-bfi: BrainfInterpreter.cmi BrainfInterpreter.cmo
-	$(OCCMD) -o bfi App.ml
+bfi: BrainfInterpreter.cmi
+	$(OCCMD) -o bfi BrainfInterpreter.ml App.ml
 
 all: bfi
 
