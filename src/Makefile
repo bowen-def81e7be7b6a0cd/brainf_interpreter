@@ -9,7 +9,7 @@ BrainfInterpreter.cmo: BrainfInterpreter.cmi
 	$(OCCMD) -c BrainfInterpreter.ml
 
 bfi: BrainfInterpreter.cmi BrainfInterpreter.cmo
-	$(OCCMD) -o bfi app.ml
+	$(OCCMD) -o bfi App.ml
 
 all: bfi
 
