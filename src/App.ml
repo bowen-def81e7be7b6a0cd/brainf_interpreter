@@ -8,8 +8,20 @@ type cmd_args = {
   string_set: bool ref
 }
 
-let read_file_contents (file_name: string) : string = ""
-
+let read_file_contents (file_name: string) : string =
+  let inchan = open_in file_name in
+    let rec read_line_by_line text =
+      let result = 
+        try Some (input_line inchan) with
+          End_of_file -> None
+        | ex          -> close_in_noerr inchan; raise ex
+      in
+        match result with
+          None   -> text
+        | Some l -> read_line_by_line (text ^ l)
+    in
+      read_line_by_line ""
+  
 let initialize_program_from_string (program_string: string) (cell_size: int) : BrainfInterpreter.program_state =
   let insts, jumps = BrainfInterpreter.parse_program_string program_string in
     BrainfInterpreter.initialize_program insts jumps cell_size
