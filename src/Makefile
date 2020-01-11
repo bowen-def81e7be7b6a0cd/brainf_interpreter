@@ -2,14 +2,14 @@ OC = ocamlc
 OCFLAGS =
 OCCMD = $(OC) $(OCFLAGS)
 
-brainf_interpreter.cmi:
-	$(OCCMD) -c brainf_interpreter.mli
+BrainfInterpreter.cmi:
+	$(OCCMD) -c BrainfInterpreter.mli
 
-brainf_interpreter.cmo: brainf_interpreter.cmi
-	$(OCCMD) -c brainf_interpreter.ml
+BrainfInterpreter.cmo: BrainfInterpreter.cmi
+	$(OCCMD) -c BrainfInterpreter.ml
 
-bfi: brainf_interpreter.cmi brainf_interpreter.cmo
-	$(OCCMD) -open brainf_interpreter.cmo -o bfi app.ml
+bfi: BrainfInterpreter.cmi BrainfInterpreter.cmo
+	$(OCCMD) -o bfi app.ml
 
 all: bfi
 
