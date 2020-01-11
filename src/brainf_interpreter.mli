@@ -1,5 +1,13 @@
-type state_t
+type program_state
 
-val reset_program: state_t -> state_t
+type instruction
 
-val execute_program: state_t -> state_t
+type jump_list
+
+val parse_program_string : string -> instruction array * jump_list
+
+val initialize_program: instruction array -> jump_list -> int -> program_state
+
+val reset_program: program_state -> program_state
+
+val execute_program: program_state -> program_state

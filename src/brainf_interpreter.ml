@@ -1,8 +1,12 @@
-open Brainf_parser
-
-exception Invalid_program_state of string
-
-type instruction = Brainf_parser.instruction
+type instruction = IncDataPtr
+                 | DecDataPtr
+                 | IncData
+                 | DecData
+                 | Input
+                 | Output
+                 | JumpZero
+                 | JumpNonZero
+                 | Nop
 
 type jump_list = (int * int) list
 
@@ -16,10 +20,60 @@ type program_state = {
   cell_size: int  
 }
 
-type state_t = program_state
+exception Invalid_program_state of string
 
-let rec flip_assoc_list (al: ('a * 'b) list) : ('b * 'a) list =
-  List.fold_right (fun (a, b) l -> (b, a)::l) al []
+let explode_string (s: string) : char list =
+  let rec es i cl =
+    if i < 0 then
+      cl
+    else
+      es (i - 1) (s.[i]::cl)
+  in 
+    es ((String.length s) - 1) []
+
+let strip_ignored_characters (program_string: string) : char list = 
+  program_string
+  |> explode_string
+  |> List.filter (String.contains "><+-,.[]")
+
+let char_to_instruction (c: char) : instruction =
+  match c with
+    '>' -> IncDataPtr
+  | '<' -> DecDataPtr
+  | '+' -> IncData
+  | '-' -> DecData
+  | ',' -> Input
+  | '.' -> Output
+  | '[' -> JumpZero
+  | ']' -> JumpNonZero
+  | _   -> Nop
+
+let char_list_to_instruction_list (char_list: char list) : instruction list = 
+  let rec chars_to_instructions chars insts =
+    match chars with
+      []    -> insts
+    | c::cs -> chars_to_instructions cs ((char_to_instruction c)::insts)
+  in
+    chars_to_instructions char_list []
+    |> List.rev
+
+let assemble_program_jump_list (instructions: instruction list) : jump_list =
+  let rec assemble_jl insts stack jl i = 
+    match insts, stack with
+      [], _                    -> jl 
+    | JumpZero::rest, _        -> assemble_jl rest (i::stack) jl (i + 1)
+    | JumpNonZero::rest, x::xs -> assemble_jl rest xs ((x, i)::jl) (i + 1)
+    | _::rest, _               -> assemble_jl rest stack jl (i + 1)
+  in
+    assemble_jl instructions [] [] 0
+
+let parse_program_string (program_string: string) : instruction array * jump_list =
+  let instructions = 
+    program_string
+    |> strip_ignored_characters 
+    |> char_list_to_instruction_list
+  in
+    Array.of_list instructions, assemble_program_jump_list instructions
 
 let initialize_program 
 (instructions: instruction array)
@@ -29,7 +83,7 @@ let initialize_program
     memory_to_ptr = [0];
     memory_after_ptr = [];
     jump_list = jump_list;
-    jump_list_rev = flip_assoc_list jump_list;
+    jump_list_rev = List.map (fun (a, b) -> (b + 0, a + 0)) jump_list;
     instructions = instructions;
     cell_size = cell_size
   }
@@ -69,11 +123,14 @@ let instruction_decdata (state: program_state) : program_state =
   { state with memory_to_ptr =
       match state.memory_to_ptr with
         []    -> raise (Invalid_program_state "instruction_decdata") 
-      | x::xs -> ((x - 1) mod state.cell_size)::xs
+      | x::xs -> 
+        if x - 1 >= 0 then
+          ((x - 1) mod state.cell_size)::xs
+        else
+          255::xs
   }
 
 let instruction_input (state: program_state) : program_state =
-  Printf.printf ">>> ";
   let input_value = 
     match read_int_opt () with
       None   -> 0
@@ -123,6 +180,7 @@ let execute_instruction (state: program_state) (inst: instruction) : program_sta
     | Output      -> instruction_output
     | JumpZero    -> instruction_jumpzero
     | JumpNonZero -> instruction_jumpnonzero
+    | Nop         -> fun _ -> state
   in
     let next_state = instruction_function state in
       { next_state with inst_ptr = next_state.inst_ptr + 1 }
