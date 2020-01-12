@@ -2,6 +2,8 @@ OC = ocamlc
 OCFLAGS =
 OCCMD = $(OC) $(OCFLAGS)
 
+default: all
+
 BrainfInterpreter.cmi:
 	$(OCCMD) -c BrainfInterpreter.mli
 
