@@ -2,7 +2,7 @@
 An interpreter for the Brainf\*ck esoteric programming language written in entirely in OCaml.
 
 # Background
-[Brainf\*ck](https://en.wikipedia.org/wiki/Brainfuck) was invented in 1993 by Urban Müller and consists of only 8 symbols. The goal of this project is to provide an interpreter for this langauge written purely in OCaml.
+[Brainf\*ck](https://en.wikipedia.org/wiki/Brainfuck) was invented in 1993 by Urban Müller and consists of only 8 symbols. The goal of this project is to provide an interpreter for this language written purely in OCaml.
 
 # Setup
 Simply pull down this repo and follow these steps:
